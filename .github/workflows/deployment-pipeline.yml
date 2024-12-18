@@ -63,6 +63,7 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }} .
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }}
+          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }}|" k8s/deployment.yaml
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
 
@@ -74,5 +75,6 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }} .
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}
+          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" eureka-deployment.yml
           kubectl apply -f eureka-deployment.yml
           kubectl apply -f eureka-service.yml
