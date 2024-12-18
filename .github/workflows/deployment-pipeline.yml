@@ -20,7 +20,7 @@ jobs:
         id: changes
         run: |
           git fetch origin main
-          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          CHANGED_FILES=$(git rev-parse --verify HEAD^ >/dev/null 2>&1 && git diff --name-only HEAD^ HEAD || echo "")
           echo "Changed files: $CHANGED_FILES"
           if echo "$CHANGED_FILES" | grep -q '^patient-service/'; then echo "patient-service" >> changes.txt; fi
           if echo "$CHANGED_FILES" | grep -q '^EurekaServer/'; then echo "EurekaServer" >> changes.txt; fi
