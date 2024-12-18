@@ -1,0 +1,71 @@
+name: Conditional Deployment to AWS EKS
+
+on:
+  push:
+    branches:
+      - main  # Trigger on push to the main branch
+
+jobs:
+  detect-and-deploy:
+    name: Detect Changed Services and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Detect Changed Services
+      - name: Identify Changed Services
+        id: changes
+        run: |
+          git fetch origin main
+          CHANGED_FILES=$(git diff --name-only HEAD^ HEAD)
+          echo "Changed files: $CHANGED_FILES"
+          if echo "$CHANGED_FILES" | grep -q '^patient-service/'; then echo "patient-service" >> changes.txt; fi
+          if echo "$CHANGED_FILES" | grep -q '^EurekaServer/'; then echo "EurekaServer" >> changes.txt; fi
+          echo "::set-output name=changed_services::$(cat changes.txt | tr '\n' ',')"
+
+      # Step 3: Configure AWS Credentials
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Step 4: Install kubectl
+      - name: Install kubectl
+        run: |
+          curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          chmod +x kubectl
+          sudo mv kubectl /usr/local/bin/
+
+      # Step 5: Authenticate with EKS
+      - name: Authenticate with EKS
+        run: |
+          aws eks update-kubeconfig --name ${{ secrets.K8S_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+
+      # Step 6: Deploy Service A (if changed)
+      - name: Deploy Service A
+        if: contains(steps.changes.outputs.changed_services, 'patient-service')
+        run: |
+          cd patient-service
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }} .
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }}
+          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }}|" k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+      # Step 7: Deploy Service B (if changed)
+      - name: Deploy Service B
+        if: contains(steps.changes.outputs.changed_services, 'EurekaServer')
+        run: |
+          cd EurekaServer
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/EurekaServer:${{ github.sha }} .
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/EurekaServer:${{ github.sha }}
+          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/EurekaServer:${{ github.sha }}|" k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
