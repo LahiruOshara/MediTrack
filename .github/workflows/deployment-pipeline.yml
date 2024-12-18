@@ -48,6 +48,14 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ secrets.K8S_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
+      # Step 6: Set up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'  # Use Eclipse Temurin distribution
+
+      # Step 7: Build and Deploy Services
       - name: Deploy Service A
         if: contains(steps.changes.outputs.changed_services, 'patient-service')
         run: |
