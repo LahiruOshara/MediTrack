@@ -48,7 +48,6 @@ jobs:
         run: |
           aws eks update-kubeconfig --name ${{ secrets.K8S_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
 
-      # Step 6: Deploy Service A (if changed)
       - name: Deploy Service A
         if: contains(steps.changes.outputs.changed_services, 'patient-service')
         run: |
@@ -60,14 +59,14 @@ jobs:
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
 
-      # Step 7: Deploy Service B (if changed)
-      - name: Deploy Service B
+      - name: Build and Deploy EurekaServer
         if: contains(steps.changes.outputs.changed_services, 'EurekaServer')
         run: |
           cd EurekaServer
+          mvn clean package -DskipTests
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }} .
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}
           sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" k8s/deployment.yaml
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
+          kubectl apply -f eureka-deployment.yml
+          kubectl apply -f eureka-service.yml
