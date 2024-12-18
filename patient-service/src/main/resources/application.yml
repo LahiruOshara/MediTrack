@@ -21,8 +21,6 @@ spring:
 
 eureka:
   client:
-    service-url:
-      defaultZone: http://eureka-service.default.svc.cluster.local:8761/eureka/ # URL of Eureka server
     serviceUrl:
       defaultZone: http://eureka-service.default.svc.cluster.local:8761/eureka/ # URL of Eureka server
   instance:
