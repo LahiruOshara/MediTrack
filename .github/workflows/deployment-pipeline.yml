@@ -65,9 +65,9 @@ jobs:
         if: contains(steps.changes.outputs.changed_services, 'EurekaServer')
         run: |
           cd EurekaServer
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/EurekaServer:${{ github.sha }} .
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }} .
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/EurekaServer:${{ github.sha }}
-          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/EurekaServer:${{ github.sha }}|" k8s/deployment.yaml
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}
+          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" k8s/deployment.yaml
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
