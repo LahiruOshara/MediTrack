@@ -78,3 +78,4 @@ jobs:
           sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" eureka-deployment.yml
           kubectl apply -f eureka-deployment.yml
           kubectl apply -f eureka-service.yml
+          kubectl delete pod -l app=eureka-service
