@@ -13,6 +13,9 @@ jobs:
       matrix:
         service:
           - patient-service
+          - aggregator-service
+          - appointment-service
+          - notification-service
           - EurekaServer
 
     steps:
