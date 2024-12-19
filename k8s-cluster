@@ -1,0 +1,7 @@
+eksctl create cluster \
+  --name healthsync \
+  --region eu-west-2 \
+  --vpc-public-subnets subnet-0b33f2a0d1db5705f,subnet-0da8299b91af46912,subnet-04252bbe19b0f1799\
+  --nodegroup-name standard-workers \
+  --node-type t2.micro \
+  --nodes 2

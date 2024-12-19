@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: appointment-service
+  name: aggregator-service
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: appointment-service
+      app: aggregator-service
   template:
     metadata:
       labels:
-        app: appointment-service
+        app: aggregator-service
     spec:
       containers:
         - name: patient-service
-          image: oshara19/appointment-service:latest
+          image: oshara19/aggregator-service:latest
           ports:
             - containerPort: 8082
           env:
