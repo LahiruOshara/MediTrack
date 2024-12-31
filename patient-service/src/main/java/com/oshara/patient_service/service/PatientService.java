@@ -19,6 +19,10 @@ public class PatientService {
 
     }
 
+    public Patient addPatient(Patient patient) {
+        return patientRepository.save(patient);
+    }
+
     public Optional<Patient> getPatientById(Long id) {
         return patientRepository.findById(id);
     }
