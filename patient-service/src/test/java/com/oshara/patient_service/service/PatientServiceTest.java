@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import java.util.Optional;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,10 +41,15 @@ class PatientServiceTest {
 
     @Test
     void testGetPatientById() {
-        Patient patient = new Patient("John Doe", "john@example.com");
+        Patient patient = new Patient();
+        patient.setId(1L);
+        patient.setName("John Doe");
+        patient.setEmail("test@test.com");
+        patient.setPhoneNumber("1234567890");
+        patient.setDateOfBirth("01/01/2000");
         when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
 
-        Patient fetched = patientService.getPatientById(1L);
+        Patient fetched = patientService.getPatientById(1L).get();
 
         assertNotNull(fetched);
         assertEquals("John Doe", fetched.getName());

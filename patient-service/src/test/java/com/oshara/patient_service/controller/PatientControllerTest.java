@@ -1,6 +1,7 @@
 package com.oshara.patient_service.controller;
 
 import com.oshara.patient_service.model.api.PatientApi;
+import com.oshara.patient_service.model.entity.Patient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,7 +33,7 @@ class PatientControllerIntegrationTest {
 
     @Test
     void testGetPatient() {
-        ResponseEntity<PatientDTO> response = restTemplate.getForEntity("/patients/1", PatientDTO.class);
+        ResponseEntity<Patient> response = restTemplate.getForEntity("/patients/1", Patient.class);
 
         assertEquals(200, response.getStatusCodeValue());
         assertNotNull(response.getBody());
