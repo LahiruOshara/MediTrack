@@ -26,8 +26,8 @@ jobs:
           echo "Changed files: $CHANGED_FILES"
           if echo "$CHANGED_FILES" | grep -q '^patient-service/'; then echo "patient-service" >> changes.txt; fi
           if echo "$CHANGED_FILES" | grep -q '^EurekaServer/'; then echo "EurekaServer" >> changes.txt; fi
-          if echo "$CHANGED_FILES" | grep -q '^appointment-service/'; then echo "appointment-service" >> changes.txt; fi
-          if echo "$CHANGED_FILES" | grep -q '^notification-service/'; then echo "notification-service" >> changes.txt; fi
+#          if echo "$CHANGED_FILES" | grep -q '^appointment-service/'; then echo "appointment-service" >> changes.txt; fi
+#          if echo "$CHANGED_FILES" | grep -q '^notification-service/'; then echo "notification-service" >> changes.txt; fi
           echo "::set-output name=changed_services::$(cat changes.txt | tr '\n' ',')"
 
       # Step 3: Configure AWS Credentials
@@ -84,28 +84,28 @@ jobs:
           kubectl apply -f patient-service-service.yml
           kubectl delete pod -l app=patient-service
 
-      - name: Deploy Appointment Service
-        if: contains(steps.changes.outputs.changed_services, 'appointment-service')
-        run: |
-          cd appointment-service
-          mvn clean package -DskipTests
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }} .
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }}
-          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }}|" appointment-service-service.yml
-          kubectl apply -f appointment-service-deployment.yml
-          kubectl apply -f appointment-service-service.yml
-          kubectl delete pod -l app=appointment-service
+#      - name: Deploy Appointment Service
+#        if: contains(steps.changes.outputs.changed_services, 'appointment-service')
+#        run: |
+#          cd appointment-service
+#          mvn clean package -DskipTests
+#          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }} .
+#          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+#          docker push ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }}
+#          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }}|" appointment-service-service.yml
+#          kubectl apply -f appointment-service-deployment.yml
+#          kubectl apply -f appointment-service-service.yml
+#          kubectl delete pod -l app=appointment-service
 
-      - name: Deploy Notification Service
-        if: contains(steps.changes.outputs.changed_services, 'notification-service')
-        run: |
-          cd notification-service
-          mvn clean package -DskipTests
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }} .
-          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }}
-          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }}|" notification-service-service.yml
-          kubectl apply -f notification-service-deployment.yml
-          kubectl apply -f notification-service-service.yml
-          kubectl delete pod -l app=notification-service
+#      - name: Deploy Notification Service
+#        if: contains(steps.changes.outputs.changed_services, 'notification-service')
+#        run: |
+#          cd notification-service
+#          mvn clean package -DskipTests
+#          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }} .
+#          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+#          docker push ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }}
+#          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }}|" notification-service-service.yml
+#          kubectl apply -f notification-service-deployment.yml
+#          kubectl apply -f notification-service-service.yml
+#          kubectl delete pod -l app=notification-service
