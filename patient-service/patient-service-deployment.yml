@@ -4,7 +4,7 @@ metadata:
   name: patient-service
   namespace: meditrack
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: patient-service
