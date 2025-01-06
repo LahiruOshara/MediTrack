@@ -16,6 +16,7 @@ jobs:
           - EurekaServer
           - appointment-service
           - notification-service
+          - aggregator-service
 
     steps:
       - name: Checkout code
