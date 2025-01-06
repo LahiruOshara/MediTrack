@@ -1,0 +1,18 @@
+{
+   "Version":"2012-10-17",
+   "Statement":[
+      {
+         "Effect":"Allow",
+         "Principal":{
+            "Federated":"arn:aws:iam::774305608171:oidc-provider/oidc.eks.eu-west-2.amazonaws.com/id/B42DA3D563314EFE1F18E7731CF30131"
+         },
+         "Action":"sts:AssumeRoleWithWebIdentity",
+         "Condition":{
+            "StringEquals":{
+               "oidc.eks.eu-west-2.amazonaws.com/id/B42DA3D563314EFE1F18E7731CF30131:aud":"sts.amazonaws.com",
+               "oidc.eks.eu-west-2.amazonaws.com/id/B42DA3D563314EFE1F18E7731CF30131:sub":"system:serviceaccount:kube-system:meditrack-load-balancer-controller"
+            }
+         }
+      }
+   ]
+}
