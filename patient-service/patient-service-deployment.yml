@@ -2,8 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: patient-service
+  namespace: meditrack
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: patient-service
@@ -21,6 +22,6 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
             - name: EUREKA_SERVER_URL
-              value: "http://eureka-service.default.svc.cluster.local:8761/eureka/"
+              value: "http://eureka-service.meditrack.svc.cluster.local:8761/eureka/"
           imagePullPolicy: Always
       automountServiceAccountToken: false

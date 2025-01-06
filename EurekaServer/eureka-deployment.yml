@@ -1,7 +1,14 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: meditrack
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: eureka-service
+  namespace: meditrack
 spec:
   replicas: 1
   selector:
