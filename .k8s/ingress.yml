@@ -33,3 +33,10 @@ spec:
                 name: appointment-service
                 port:
                   number: 8082
+          - path: /api/notifications
+            pathType: Prefix
+            backend:
+              service:
+                name: notification-service
+                port:
+                  number: 8083
