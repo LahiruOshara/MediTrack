@@ -15,6 +15,7 @@ jobs:
           - patient-service
           - EurekaServer
           - appointment-service
+          - notification-service
 
     steps:
       - name: Checkout code
