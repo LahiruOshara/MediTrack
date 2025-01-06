@@ -1,7 +1,5 @@
 package com.oshara.appointment_service.service;
 
-import com.oshara.appointment_service.client.Patient;
-import com.oshara.appointment_service.client.PatientClient;
 import com.oshara.appointment_service.model.entity.Appointment;
 import com.oshara.appointment_service.repository.AppointmentRepository;
 import lombok.AllArgsConstructor;
@@ -15,7 +13,6 @@ import java.util.Optional;
 public class AppointmentService {
 
     private AppointmentRepository appointmentRepository;
-    private PatientClient patientClient;
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
@@ -31,9 +28,5 @@ public class AppointmentService {
 
     public void deleteAppointment(Long id) {
         appointmentRepository.deleteById(id);
-    }
-
-    public Patient getPatientDetails(Long patientId) {
-        return patientClient.getPatientById(patientId);  // Feign client call to PatientService
     }
 }

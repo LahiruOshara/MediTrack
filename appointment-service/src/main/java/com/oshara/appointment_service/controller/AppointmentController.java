@@ -45,10 +45,4 @@ public class AppointmentController {
         appointmentService.deleteAppointment(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/{id}/patient")
-    public ResponseEntity<Patient> getPatientDetails(@PathVariable Long id) {
-        Patient patient = appointmentService.getPatientDetails(id);
-        return new ResponseEntity<>(patient, HttpStatus.OK);
-    }
 }
