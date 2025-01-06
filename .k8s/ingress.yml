@@ -40,3 +40,10 @@ spec:
                 name: notification-service
                 port:
                   number: 8083
+          - path: /api/aggregation
+            pathType: Prefix
+            backend:
+              service:
+                name: aggregator-service
+                port:
+                  number: 8084
