@@ -19,9 +19,4 @@ public class PatientServiceApplication {
 			return "OK";
 		}
 	}
-
-
-
-
-
 }
