@@ -64,7 +64,7 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }} .
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}
-          sed -i "s|image: .*/eureka-service:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" eureka-service-deployment.yml
+          sed -i "s|image: .*/eureka-service:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" eureka-deployment.yml
           kubectl annotate deployment eureka-service kubernetes.io/change-cause="Deployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite -n meditrack
           kubectl apply -f eureka-deployment.yml -n meditrack
           kubectl apply -f eureka-service.yml -n meditrack
