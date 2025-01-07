@@ -64,9 +64,10 @@ jobs:
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }} .
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}
-          sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" eureka-deployment.yml
-          kubectl apply -f eureka-deployment.yml
-          kubectl apply -f eureka-service.yml
+          sed -i "s|image: .*/eureka-service:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-service:${{ github.sha }}|" eureka-service-deployment.yml
+          kubectl annotate deployment eureka-service kubernetes.io/change-cause="Deployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite -n meditrack
+          kubectl apply -f eureka-deployment.yml -n meditrack
+          kubectl apply -f eureka-service.yml -n meditrack
 
       - name: Deploy Patient Service
         if: contains(steps.changes.outputs.changed_services, 'patient-service')
@@ -80,5 +81,3 @@ jobs:
           kubectl annotate deployment patient-service kubernetes.io/change-cause="Deployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite -n meditrack
           kubectl apply -f patient-service-deployment.yml -n meditrack
           kubectl apply -f patient-service-service.yml -n meditrack
-          echo "Modified patient-service-deployment.yml:"
-          cat patient-service-deployment.yml
