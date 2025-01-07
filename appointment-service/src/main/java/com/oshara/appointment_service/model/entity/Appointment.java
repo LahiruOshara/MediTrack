@@ -18,5 +18,4 @@ public class Appointment {
     private String appointmentDate;
     private String status;
 
-    // Getters and Setters
 }
