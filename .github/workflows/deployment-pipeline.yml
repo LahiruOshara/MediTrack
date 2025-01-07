@@ -81,3 +81,42 @@ jobs:
           kubectl annotate deployment patient-service kubernetes.io/change-cause="Deployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite -n meditrack
           kubectl apply -f patient-service-deployment.yml -n meditrack
           kubectl apply -f patient-service-service.yml -n meditrack
+
+      - name: Deploy Appointment Service
+        if: contains(steps.changes.outputs.changed_services, 'appointment-service')
+        run: |
+          cd appointment-service
+          mvn clean package -DskipTests
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }} .
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }}
+          sed -i "s|image: .*/appointment-service:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/appointment-service:${{ github.sha }}|" appointment-service-deployment.yml
+          kubectl annotate deployment appointment-service kubernetes.io/change-cause="Deployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite -n meditrack
+          kubectl apply -f appointment-service-deployment.yml -n meditrack
+          kubectl apply -f appointment-service-service.yml -n meditrack
+
+      - name: Deploy Notification Service
+        if: contains(steps.changes.outputs.changed_services, 'notification-service')
+        run: |
+          cd notification-service
+          mvn clean package -DskipTests
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }} .
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }}
+          sed -i "s|image: .*/notification-service:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/notification-service:${{ github.sha }}|" notification-service-deployment.yml
+          kubectl annotate deployment notification-service kubernetes.io/change-cause="Deployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite -n meditrack
+          kubectl apply -f notification-service-deployment.yml -n meditrack
+          kubectl apply -f notification-service-service.yml -n meditrack
+
+      - name : Deploy Aggregator Service
+        if: contains(steps.changes.outputs.changed_services, 'aggregator-service')
+        run: |
+          cd aggregator-service
+          mvn clean package -DskipTests
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/aggregator-service:${{ github.sha }} .
+          echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/aggregator-service:${{ github.sha }}
+          sed -i "s|image: .*/aggregator-service:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/aggregator-service:${{ github.sha }}|" aggregator-service-deployment.yml
+          kubectl annotate deployment aggregator-service kubernetes.io/change-cause="Deployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite -n meditrack
+          kubectl apply -f aggregator-service-deployment.yml -n meditrack
+          kubectl apply -f aggregator-service-service.yml -n meditrack
