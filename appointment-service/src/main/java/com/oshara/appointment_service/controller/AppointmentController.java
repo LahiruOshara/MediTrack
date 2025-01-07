@@ -80,4 +80,10 @@ public class AppointmentController {
         appointmentService.deleteConsultation(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/run")
+    public ResponseEntity<String> run() {
+        appointmentService.aggregateData();
+        return ResponseEntity.ok("Running");
+    }
 }
