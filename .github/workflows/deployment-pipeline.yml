@@ -77,5 +77,6 @@ jobs:
           echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }}
           sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/patient-service:${{ github.sha }}|" patient-service-service.yml
+          kubectl annotate deployment patient-service kubernetes.io/change-cause="Redeployed at $(date +'%Y-%m-%d %H:%M:%S')" --overwrite
           kubectl apply -f patient-service-deployment.yml
           kubectl apply -f patient-service-service.yml
