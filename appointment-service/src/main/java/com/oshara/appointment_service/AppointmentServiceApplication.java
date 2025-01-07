@@ -20,4 +20,5 @@ public class AppointmentServiceApplication {
 			return "OK";
 		}
 	}
+
 }

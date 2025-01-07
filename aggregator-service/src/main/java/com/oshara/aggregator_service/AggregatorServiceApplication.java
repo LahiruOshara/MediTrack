@@ -18,5 +18,6 @@ public class AggregatorServiceApplication {
 		public String healthCheck() {
 			return "OK";
 		}
+
 	}
 }
